@@ -1,0 +1,1 @@
+iperf -s -p 5566 >> log.txt
