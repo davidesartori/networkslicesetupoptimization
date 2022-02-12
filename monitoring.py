@@ -1,5 +1,10 @@
+"""
+Author: Gruppo 22 Networking II
+Description: Implementation of network monitoring
+"""
+
 def start_monitoring():
-    file = open('log.txt', 'r')
+    file = open('log/perf_log.log', 'r')
     Lines = file.readlines()
     #{host: [ip, porta, bandwidth]}
     hosts = {}
@@ -13,7 +18,7 @@ def start_monitoring():
             host_port = params[1].split(' port ')[1].split('\n')[0]
             if(id_host in hosts):
                 #la si chiama ogni volta che inizia un nuovo "ciclo"
-                #di richieste iperf 
+                #di richieste iperf
                 avg = calculate_avg_bandwidth(hosts)
                 #pulisco per inserire i valori del nuovo "ciclo"
                 print(avg)

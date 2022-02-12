@@ -1,1 +1,1 @@
-iperf -s -p 5566 >> log.txt
+iperf -s -p 5566 >> log/perf_log.log
