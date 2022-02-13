@@ -6,35 +6,34 @@ About: Simple client.
 """
 
 import time
+import os
 
-# Ip degli host selezionati come server
+SERVICE_PORT = 5566
 IP_SERVERS = ['10.0.0.1', '10.0.0.2']
-INTERVAL = 5
+INTERVAL = 2
 
 
-client = iperf3.Client()
-client.port = 5566
-client.protocol = 'udp'
-
-
-def iperf(ip):
-    client.server_hostname = '{}'.format(ip)
-    result = client.run()
+def mycmd(SERVICE_IP):
+    os.system('iperf -c {} -p {}'.format(SERVICE_IP, SERVICE_PORT))
 
 
 if __name__ == "__main__":
-    file = open('./log/server_ip_log.log', 'r')
+    file = open('./log/serverIP.log', 'r')
     
     while True:
         Lines = file.readlines()
         for line in Lines:
+
+            # quando si rileva un calo della larghezza di banda scriviamo 'change'
             if('change' in line):
                 for ip in IP_SERVERS:
-                    iperf(ip)
-                    time.sleep(3) # diamo tempo all'iperf di terminare
+                    mycmd(ip)
+                    time.sleep(5) # diamo tempo all'iperf di terminare
+
             else:
                 current_ip = line.split('\n')[0]
-                iperf(current_ip)
-                time.sleep(3)
+                print(current_ip)
+                mycmd(current_ip)
+                time.sleep(5)
 
             time.sleep(INTERVAL) # leggere ogni INTERVAL secondi
