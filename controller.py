@@ -8,6 +8,11 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
+import subprocess
+import modules.config as config
+
+
+conf = config.get_conf("config/controller.conf")
 
 
 class TrafficSlicing(app_manager.RyuApp):
@@ -23,6 +28,11 @@ class TrafficSlicing(app_manager.RyuApp):
             2: {1: 2, 2: 1},
             3: {1: 2, 2: 1},
         }
+
+        # launch monitoring.py
+        if conf["monitoring"] == "true":
+            subprocess.call("sudo python3 monitoring.py", shell=True)
+
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
