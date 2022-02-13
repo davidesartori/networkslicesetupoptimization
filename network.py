@@ -40,10 +40,10 @@ def build():
     print("Testing network connectivity")
     net.pingAll()
     h1, h2, h3, h4 = net.get('h1', 'h2', 'h3', 'h4')
-    h1.cmd('./iperfServer.sh {} &'.format(sleep_time))
-    h2.cmd('./iperfClient.sh {} &'.format(sleep_time))
-    h3.cmd('./iperfClient.sh {} &'.format(sleep_time))
-    h4.cmd('./iperfClient.sh {} &'.format(sleep_time))
+    h1.cmd('python3 ./server.py &')
+    h2.cmd('python3 ./server.py &')
+    h3.cmd('python3 ./client.py &')
+    h4.cmd('python3 ./client.py &')
     CLI(net)
 
 
