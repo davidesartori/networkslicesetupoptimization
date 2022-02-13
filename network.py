@@ -24,7 +24,7 @@ class SimpleTopo(Topo):
         for i in irange(1, n):
             host = self.addHost('h%s' % i, cpu=.5/n)
             # 10 Mbps, 5ms delay, 1% loss, 1000 packet queue
-            if(i%2==0):
+            if i % 2 == 0:
                 self.addLink(host, switch, bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
             else:
                 self.addLink(host, switch, bw=2, delay='10ms', loss=1, max_queue_size=1000, use_htb=True)
@@ -45,24 +45,6 @@ def build(net):
     # h3.cmd('./iperfClient.sh {} &'.format(sleep_time))
     # h4.cmd('./iperfClient.sh {} &'.format(sleep_time))
     # CLI(net)
-
-
-def check_server_migration(server_addr_file):
-    address_file = open(server_addr_file)
-
-    line = address_file.readline()
-    address_file.close()
-    file_server_address = line.split(";")[0].strip()
-
-
-    print("Checking for migration requests...")
-
-    if (current_server_address != file_server_address):
-        print("Service migration from " + current_server_address + " to " + file_server_address)
-
-        # service migration
-
-    return file_server_address
 
 
 def execute_iperf(hosts, current_server):
@@ -93,6 +75,16 @@ def write_iperf(path, string):
     file_out.close()
 
 
+def get_current_server_address(path):
+    file_in = open(path)
+    address = file_in.readline()
+    file_in.close()
+    address = address.split(";")[0].strip()
+
+    return address
+
+
+
 if __name__ == '__main__':
     conf = config.get_conf("config/network.conf")
     sleep_time = conf["sleep_time"]  # seconds between client iperf requests
@@ -112,13 +104,18 @@ if __name__ == '__main__':
     write_server_address(current_server_address, "up")
 
     while True:
-        print("Running iperf to check current server performance")
-        iperf_result = execute_iperf(hosts, current_server)
-        iperf_result = iperf_result[:-1]
-        print("Performance analysis done")
-        write_iperf(iperf_file, iperf_result)
+        file_address = get_current_server_address(server_addr_file)
 
-        current_server_address = check_server_migration(server_addr_file)
-        current_server = "h" + current_server_address.split(".")[-1]
+        if file_address == current_server_address:
+            print("Running iperf to check current server performance")
+            iperf_result = execute_iperf(hosts, current_server)
+            iperf_result = iperf_result[:-1]
+            print("Performance analysis done")
+            write_iperf(iperf_file, iperf_result)
+        elif file_address == "migrate":
+            print("run iperf on all the servers and wait for feedback")
+        else:
+            print("migrate the service")
+            current_server = "h" + file_address.split(".")[-1]
 
         time.sleep(int(sleep_time))
