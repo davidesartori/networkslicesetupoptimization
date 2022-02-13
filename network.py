@@ -47,7 +47,7 @@ def build(net):
     # CLI(net)
 
 
-def execute_iperf(hosts, current_server):
+def execute_iperf(hosts, current_server, current_server_address):
     iperf_string = ""
 
     for host in hosts:
@@ -55,12 +55,30 @@ def execute_iperf(hosts, current_server):
         s = net.get(current_server)
 
         s.cmd("iperf -s -p 5566&")
-        iperf_output = h.cmd("iperf -c 10.0.0.1 -p 5566")
+        iperf_output = h.cmd("iperf -c " + current_server_address + " -p 5566")
         bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
         iperf_string += current_server + ";" + host + ";" + bandwidth + "\n"
 
     return iperf_string
-    
+
+
+def execute_iperf_for_migration(hosts, servers):
+    iperf_string = ""
+
+    for server in servers:
+
+        s = net.get(server)
+
+        for host in hosts:
+            h = net.get(host)
+
+            s.cmd("iperf -s -p 5566&")
+            server_address = "10.0.0." + server[1:]
+            iperf_output = h.cmd("iperf -c " + server_address + " -p 5566")
+            bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
+            iperf_string += server + ";" + host + ";" + bandwidth + "\n"
+
+    return iperf_string
 
 
 def write_server_address(current_server_address, status="down"):
@@ -84,7 +102,6 @@ def get_current_server_address(path):
     return address
 
 
-
 if __name__ == '__main__':
     conf = config.get_conf("config/network.conf")
     sleep_time = conf["sleep_time"]  # seconds between client iperf requests
@@ -92,7 +109,7 @@ if __name__ == '__main__':
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
     hosts = ["h3", "h3"]
-    servers = ["h1", "h4"]
+    servers = ["h1", "h1"]
     current_server = "h" + current_server_address.split(".")[-1]
 
     write_server_address(current_server_address)
@@ -108,12 +125,18 @@ if __name__ == '__main__':
 
         if file_address == current_server_address:
             print("Running iperf to check current server performance")
-            iperf_result = execute_iperf(hosts, current_server)
+            iperf_result = execute_iperf(hosts, current_server, current_server_address)
             iperf_result = iperf_result[:-1]
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
         elif file_address == "migrate":
-            print("run iperf on all the servers and wait for feedback")
+            print("Executing iperf on every server")
+            iperf_result = execute_iperf_for_migration(hosts, servers)
+            write_iperf(iperf_file, iperf_result[:-1])
+
+            while file_address == "migrate":
+                file_address = get_current_server_address(server_addr_file)
+                time.sleep(10)
         else:
             print("migrate the service")
             current_server = "h" + file_address.split(".")[-1]
