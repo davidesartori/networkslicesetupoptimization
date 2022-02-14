@@ -27,10 +27,13 @@ class TrafficSlicing(app_manager.RyuApp):
 
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {
-            1: {1: 3, 3: 1, 2: 4, 4: 2},
-            4: {1: 3, 3: 1, 2: 4, 4: 2},
-            2: {1: 2, 2: 1},
-            3: {1: 2, 2: 1},
+            1: {1: 5, 5: 1, 2: [3, 4], 3: [2, 4]},
+            2: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            3: {1: 4, 4: 1, 2: [3, 5], 3: [2, 5], 5: [2, 3]},
+            4: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
+            5: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
+            6: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
+            7: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
         }
 
         # launch monitoring.py
@@ -85,8 +88,16 @@ class TrafficSlicing(app_manager.RyuApp):
         dpid = datapath.id
 
         out_port = self.slice_to_port[dpid][in_port]
-        actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
-        match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
 
+        # si incazza se mandi più messaggi, uno solo in cui si specificano più actions
+        if(isinstance(out_port, int)):
+            actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        else:
+            actions = []
+            for i in out_port:
+                out_port_i = i
+                actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
+        
+        match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
         self.add_flow(datapath, 1, match, actions)
         self._send_package(msg, datapath, in_port, actions)

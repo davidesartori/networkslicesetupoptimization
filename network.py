@@ -25,22 +25,36 @@ class SimpleTopo(Topo):
         switch_link_config = dict(bw=1)
         host_link_config = dict()
 
-        for i in range(4):
+        for i in range(7):
             sconfig = {"dpid": "%016x" % (i + 1)}
             self.addSwitch("s%d" % (i + 1), **sconfig)
 
-        for i in range(4):
+        for i in range(11):
             self.addHost("h%d" % (i + 1), **host_config)
 
+        #connecting switches
         self.addLink("s1", "s2", **switch_link_config)
-        self.addLink("s2", "s4", **switch_link_config)
-        self.addLink("s1", "s3", **switch_link_config)
+        self.addLink("s2", "s3", **switch_link_config)
         self.addLink("s3", "s4", **switch_link_config)
-
+        self.addLink("s4", "s5", **switch_link_config)
+        self.addLink("s5", "s6", **switch_link_config)
+        self.addLink("s1", "s7", **switch_link_config)
+        self.addLink("s3", "s7", **switch_link_config)
+        self.addLink("s4", "s7", **switch_link_config)
+        self.addLink("s6", "s7", **switch_link_config)
+        self.addLink("s1", "s6", **switch_link_config)
+        #connecting hosts to switches
         self.addLink("h1", "s1", **host_link_config)
         self.addLink("h2", "s1", **host_link_config)
-        self.addLink("h3", "s4", **host_link_config)
-        self.addLink("h4", "s4", **host_link_config)
+        self.addLink("h3", "s2", **host_link_config)
+        self.addLink("h4", "s3", **host_link_config)
+        self.addLink("h5", "s3", **host_link_config)
+        self.addLink("h6", "s4", **host_link_config)
+        self.addLink("h7", "s4", **host_link_config)
+        self.addLink("h8", "s5", **host_link_config)
+        self.addLink("h9", "s5", **host_link_config)
+        self.addLink("h10", "s6", **host_link_config)
+        self.addLink("h11", "s6", **host_link_config)
 
 
 def build(net):
