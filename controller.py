@@ -24,7 +24,7 @@ class TrafficSlicing(app_manager.RyuApp):
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {
             1: {1: 3, 3: 1, 2: 4, 4: 2},
-            4: {1: 4, 4: 1, 2: 3, 3: 2},
+            4: {1: 3, 3: 1, 2: 4, 4: 2},
             2: {1: 2, 2: 1},
             3: {1: 2, 2: 1},
         }
