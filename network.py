@@ -103,9 +103,9 @@ def execute_iperf_for_migration(hosts, servers):
     return iperf_string
 
 
-def write_server_address(current_server_address, status="down"):
+def write_server_address(current_server_address):
     file_out = open(server_addr_file, "w")
-    file_out.write(current_server_address + ";" + status)
+    file_out.write(current_server_address)
     file_out.close()
 
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
     build(net)
 
-    write_server_address(current_server_address, "up")
+    write_server_address(current_server_address)
 
     while True:
         file_address = get_current_server_address(server_addr_file)
