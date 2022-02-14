@@ -148,8 +148,6 @@ if __name__ == '__main__':
 
     build(net)
 
-    write_server_address(current_server_address)
-
     while True:
         file_address = get_current_server_address(server_addr_file)
 
