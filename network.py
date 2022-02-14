@@ -76,7 +76,7 @@ def execute_iperf_for_migration(hosts, servers):
             server_address = "10.0.0." + server[1:]
             iperf_output = h.cmd("iperf -c " + server_address + " -p 5566")
             bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
-            iperf_string += server + ";" + host + ";" + bandwidth + "\n"
+            iperf_string += server_address + ";" + host + ";" + bandwidth + "\n"
 
     return iperf_string
 
