@@ -17,6 +17,9 @@ def monitoring():
     server_log = conf["server_addr_file"]
     iperf_log = conf["iperf_file"]
     log_file = conf["log_file"]
+
+    logger.log(log_file, "Monitoring initialized")
+
     file_in = open(iperf_log, 'r')
     file_out = open(server_log, 'a')
     Lines = file_in.readlines()
@@ -29,9 +32,12 @@ def monitoring():
                 current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
                 print(current_bdw)
                 if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
+                    logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
+
                     file_out.write('migrate\n')
                     time.sleep(3)
             else:
+                logger.log(log_file, "Finding the best server")
                 best_server = find_best_server(servers)
                 CURRENT_BANDWIDTH = best_server[1]
                 print(best_server[0])
