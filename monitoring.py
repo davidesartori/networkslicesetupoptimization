@@ -3,43 +3,58 @@ Author: Gruppo 22 Networking II
 Description: Implementation of network monitoring
 """
 
-def start_monitoring():
-    file = open('log/perf_log.log', 'r')
-    Lines = file.readlines()
-    #{host: [ip, porta, bandwidth]}
-    hosts = {}
+from re import I
+import time
+
+THRESHOLD = 200 #Kbits/s
+CURRENT_BDW = 2200   # -manca metterlo a posto 
+
+
+def monitoring():
+    file_in = open('./log/iperf_log.log', 'r')
+    file_out = open('./log/server.log', 'a')
+    Lines = file_in.readlines()
+    #{ip_server: [bandwidth, client_counter]}
+    servers = {}
     for line in Lines:
-        if('[ ID] Interval       Transfer     Bandwidth\n' in line):
-            pass
-        if('connected with' in line):
-            params = line.split('] local 10.0.0.1 port 5566 connected with ')
-            id_host = params[0][3]
-            host_ip = params[1].split(' port ')[0]
-            host_port = params[1].split(' port ')[1].split('\n')[0]
-            if(id_host in hosts):
-                #la si chiama ogni volta che inizia un nuovo "ciclo"
-                #di richieste iperf
-                avg = calculate_avg_bandwidth(hosts)
-                #pulisco per inserire i valori del nuovo "ciclo"
-                print(avg)
-                hosts = {}
-            hosts[id_host] = [host_ip, host_port]
-        if('Bytes   ' in line):
-            params = line.split('Bytes   ')
-            bandwidth = int(params[1].split('\n')[0].split(' ')[0])
-            id_host = params[0].split(']  ')[0][3]
-            hosts[id_host].append(bandwidth)
+        print('leggo una linea')
+        if('#' in line):
+            if(len(servers)==1):
+                print('stiamo solo monitorando')
+                server = list(servers)[0]
+                current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
+                print(current_bdw)
+                if((current_bdw-CURRENT_BDW+THRESHOLD) < 0):
+                    file_out.write('migrate\n')
+                    time.sleep(3)
+            else:
+                best_server = find_best_server(servers)
+                file_out.write('{}\n'.format(best_server))
+
+        else:
+            params = line.split(';')
+            server_ip = params[0]
+            bandwidth = float(params[2].split('\n')[0])
+            if(server_ip not in servers):
+                servers[server_ip] = [0, 0]
+            servers[server_ip][0] = servers[server_ip][0] + bandwidth #sommiamo le bdw
+            servers[server_ip][1] = servers[server_ip][1] + 1 #aumentiamo il numero di client
 
 
 
-def calculate_avg_bandwidth(hosts):
-    number_hosts = len(hosts)
-    bandwidth = 0
-    for host in hosts:
-        bandwidth += hosts[host][2]
-    avg = bandwidth / number_hosts
-    return avg
+def find_best_server(servers):
+    best_bandwidth = 0
+    for server in servers:
+        bandwidth = calculate_avg_bandwidth(server[0],server[1])
+        if(bandwidth > best_bandwidth):
+            best_bandwidth = bandwidth
+            best_server = server
+    return best_server
+
+
+def calculate_avg_bandwidth(bandwidth, clients_n):
+    return bandwidth/clients_n
 
 
 if __name__ == "__main__":
-    start_monitoring()
+    monitoring()
