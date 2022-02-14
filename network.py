@@ -8,7 +8,7 @@ from mininet.net import Mininet
 from mininet.cli import CLI
 from mininet.node import CPULimitedHost
 from mininet.link import TCLink
-from mininet.node import RemoteController
+from mininet.node import RemoteController, OVSKernelSwitch
 from mininet.util import irange,dumpNodeConnections
 import modules.config as config
 import os
@@ -20,25 +20,35 @@ class SimpleTopo(Topo):
     def __init__(self, n=4, **opts):
         super(SimpleTopo, self).__init__(**opts)
         self.n = n
-        switch = self.addSwitch('s1')
-        for i in irange(1, n):
-            host = self.addHost('h%s' % i, cpu=.5/n)
-            # 10 Mbps, 5ms delay, 1% loss, 1000 packet queue
-            if i % 2 == 0:
-                self.addLink(host, switch, bw=10, delay='5ms', loss=1, max_queue_size=1000, use_htb=True)
-            else:
-                self.addLink(host, switch, bw=2, delay='10ms', loss=1, max_queue_size=1000, use_htb=True)
+        host_config = dict(inNamespace=True)
+        switch_link_config = dict(bw=1)
+        host_link_config = dict()
+
+        for i in range(4):
+            sconfig = {"dpid": "%016x" % (i + 1)}
+            self.addSwitch("s%d" % (i + 1), **sconfig)
+
+        for i in range(4):
+            self.addHost("h%d" % (i + 1), **host_config)
+
+        self.addLink("s1", "s2", **switch_link_config)
+        self.addLink("s2", "s4", **switch_link_config)
+        self.addLink("s1", "s3", **switch_link_config)
+        self.addLink("s3", "s4", **switch_link_config)
+
+        self.addLink("h1", "s1", **host_link_config)
+        self.addLink("h2", "s1", **host_link_config)
+        self.addLink("h3", "s4", **host_link_config)
+        self.addLink("h4", "s4", **host_link_config)
 
 
 def build(net):
-    c = RemoteController('c', '0.0.0.0', 6633)
-
+    c = RemoteController("c", ip="127.0.0.1", port=6633)
     net.addController(c)
+    net.build()
     net.start()
-    print("Dumping host connections")
-    dumpNodeConnections(net.hosts)
     print("Testing network connectivity")
-    # net.pingAll()
+    net.pingAll()
     h1, h2, h3, h4 = net.get('h1', 'h2', 'h3', 'h4')
     # h1.cmd('./iperfServer.sh {} &'.format(sleep_time))
     # h2.cmd('./iperfClient.sh {} &'.format(sleep_time))
@@ -115,7 +125,15 @@ if __name__ == '__main__':
     write_server_address(current_server_address)
 
     topo = SimpleTopo(n=4)
-    net = Mininet(topo=topo, host=CPULimitedHost, link=TCLink, controller=None)
+    net = net = Mininet(
+        topo=topo,
+        switch=OVSKernelSwitch,
+        build=False,
+        autoSetMacs=True,
+        autoStaticArp=True,
+        link=TCLink,
+    )
+
     build(net)
 
     write_server_address(current_server_address, "up")
