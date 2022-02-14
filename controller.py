@@ -10,9 +10,11 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 import subprocess
 import modules.config as config
+import modules.logger as logger
 
 
 conf = config.get_conf("config/controller.conf")
+log_file = conf["log_file"]
 
 
 class TrafficSlicing(app_manager.RyuApp):
@@ -20,6 +22,8 @@ class TrafficSlicing(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(TrafficSlicing, self).__init__(*args, **kwargs)
+
+        logger.log(log_file, "Contoller initialized")
 
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {

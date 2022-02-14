@@ -11,6 +11,7 @@ from mininet.link import TCLink
 from mininet.node import RemoteController, OVSKernelSwitch
 from mininet.util import irange,dumpNodeConnections
 import modules.config as config
+import modules.logger as logger
 import os
 import time
 
@@ -130,9 +131,12 @@ if __name__ == '__main__':
     server_addr_file = conf["server_addr_file"]
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
+    log_file = conf["log_file"]
     hosts = ["h3", "h3"]
     servers = ["h1", "h4"]
     current_server = "h" + current_server_address.split(".")[-1]
+
+    logger.log(log_file, "Execution started")
 
     write_server_address(current_server_address)
 
@@ -146,18 +150,28 @@ if __name__ == '__main__':
         link=TCLink,
     )
 
+    logger.log(log_file, "Creating the network")
+
     build(net)
+
+    logger.log(log_file, "Network created")
 
     while True:
         file_address = get_current_server_address(server_addr_file)
 
         if file_address == current_server_address:
+            logger.log(log_file, "Running iperf to check current server performance")
+
             print("Running iperf to check current server performance")
             iperf_result = execute_iperf(hosts, current_server, current_server_address)
             iperf_result = iperf_result[:-1]
+            logger.log(log_file, "Performance analysis done")
+
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
         elif file_address == "migrate":
+            logger.log(log_file, "Migration request detected. Executing iperf on every server")
+
             print("Executing iperf on every server")
             iperf_result = execute_iperf_for_migration(hosts, servers)
             write_iperf(iperf_file, iperf_result[:-1])
@@ -166,6 +180,8 @@ if __name__ == '__main__':
                 file_address = get_current_server_address(server_addr_file)
                 time.sleep(10)
         else:
+            logger.log(log_file, "Migrating the service")
+
             print("migrate the service")
             current_server = "h" + file_address.split(".")[-1]
 

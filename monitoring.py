@@ -6,6 +6,7 @@ Description: Implementation of network monitoring
 #from re import I
 import time
 import modules.config as config
+import modules.logger as logger
 
 CURRENT_BANDWIDTH = 0
 
@@ -15,6 +16,7 @@ def monitoring():
     threshold = conf["threshold"]
     server_log = conf["server_addr_file"]
     iperf_log = conf["iperf_file"]
+    log_file = conf["log_file"]
     file_in = open(iperf_log, 'r')
     file_out = open(server_log, 'a')
     Lines = file_in.readlines()
@@ -34,7 +36,7 @@ def monitoring():
                 CURRENT_BANDWIDTH = best_server[1]
                 print(best_server[0])
                 file_out.write('{}\n'.format(best_server[0]))
-        
+
         else:
             if(line == '0\n'):
                 pass
