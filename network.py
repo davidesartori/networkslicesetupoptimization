@@ -48,7 +48,7 @@ def build(net):
     net.build()
     net.start()
     print("Testing network connectivity")
-    net.pingAll()
+    # net.pingAll()
     h1, h2, h3, h4 = net.get('h1', 'h2', 'h3', 'h4')
     # h1.cmd('./iperfServer.sh {} &'.format(sleep_time))
     # h2.cmd('./iperfClient.sh {} &'.format(sleep_time))
@@ -66,8 +66,15 @@ def execute_iperf(hosts, current_server, current_server_address):
 
         s.cmd("iperf -s -p 5566&")
         iperf_output = h.cmd("iperf -c " + current_server_address + " -p 5566")
-        bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
-        iperf_string += current_server + ";" + host + ";" + bandwidth + "\n"
+        bandwidth = float(iperf_output.split("\n")[6].split(" ")[-2].split(" ")[0])
+        udm = iperf_output.split("\n")[6].split(" ")[-1].split(" ")[0].strip()
+
+        if(udm[0] == 'M'):
+            bandwidth *= 1000
+        elif(udm[0] == 'G'):
+            bandwidth *= 10000001
+
+        iperf_string += current_server + ";" + host + ";" + str(bandwidth) + "\n"
 
     return iperf_string
 
@@ -85,7 +92,12 @@ def execute_iperf_for_migration(hosts, servers):
             s.cmd("iperf -s -p 5566&")
             server_address = "10.0.0." + server[1:]
             iperf_output = h.cmd("iperf -c " + server_address + " -p 5566")
-            bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
+
+            if(iperf_output[0] == "-"):
+                bandwidth = iperf_output.split("\n")[6].split("  ")[4].split(" ")[0]
+            else:
+                bandwidth = "0"
+
             iperf_string += server_address + ";" + host + ";" + bandwidth + "\n"
 
     return iperf_string
@@ -119,7 +131,7 @@ if __name__ == '__main__':
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
     hosts = ["h3", "h3"]
-    servers = ["h1", "h1"]
+    servers = ["h1", "h4"]
     current_server = "h" + current_server_address.split(".")[-1]
 
     write_server_address(current_server_address)
