@@ -3,7 +3,7 @@ Author: Gruppo 22 Networking II
 Description: Implementation of network monitoring
 """
 
-from re import I
+#from re import I
 import time
 
 THRESHOLD = 200 #Kbits/s
@@ -28,7 +28,6 @@ def monitoring():
             else:
                 best_server = find_best_server(servers)
                 CURRENT_BDW = best_server[1]
-                print('heylà')
                 print(best_server[0])
                 file_out.write('{}\n'.format(best_server[0]))
 
