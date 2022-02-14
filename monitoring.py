@@ -7,7 +7,7 @@ from re import I
 import time
 
 THRESHOLD = 200 #Kbits/s
-CURRENT_BDW = 2200   # -manca metterlo a posto 
+CURRENT_BDW = 0
 
 
 def monitoring():
@@ -17,10 +17,8 @@ def monitoring():
     #{ip_server: [bandwidth, client_counter]}
     servers = {}
     for line in Lines:
-        print('leggo una linea')
         if('#' in line):
             if(len(servers)==1):
-                print('stiamo solo monitorando')
                 server = list(servers)[0]
                 current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
                 print(current_bdw)
@@ -29,7 +27,10 @@ def monitoring():
                     time.sleep(3)
             else:
                 best_server = find_best_server(servers)
-                file_out.write('{}\n'.format(best_server))
+                CURRENT_BDW = best_server[1]
+                print('heylà')
+                print(best_server[0])
+                file_out.write('{}\n'.format(best_server[0]))
 
         else:
             params = line.split(';')
@@ -45,11 +46,11 @@ def monitoring():
 def find_best_server(servers):
     best_bandwidth = 0
     for server in servers:
-        bandwidth = calculate_avg_bandwidth(server[0],server[1])
+        bandwidth = calculate_avg_bandwidth(servers[server][0],servers[server][1])
         if(bandwidth > best_bandwidth):
             best_bandwidth = bandwidth
             best_server = server
-    return best_server
+    return [best_server, best_bandwidth]
 
 
 def calculate_avg_bandwidth(bandwidth, clients_n):
