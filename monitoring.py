@@ -8,7 +8,7 @@ import time
 import modules.config as config
 import modules.logger as logger
 
-CURRENT_BANDWIDTH = 0
+CURRENT_BANDWIDTH = -1
 
 
 def monitoring():
@@ -30,7 +30,8 @@ def monitoring():
             if(len(servers)==1):
                 server = list(servers)[0]
                 current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
-                print(current_bdw)
+                if(CURRENT_BANDWIDTH == -1):
+                    CURRENT_BANDWIDTH = current_bdw
                 if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
                     logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
 
