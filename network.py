@@ -206,5 +206,6 @@ if __name__ == '__main__':
 
             print("migrating the service")
             current_server = "h" + file_address.split(".")[-1]
+            current_server_address = file_address
 
         time.sleep(int(sleep_time))

@@ -44,7 +44,7 @@ def monitoring():
                     else:
                         if(current_bdw > CURRENT_BANDWIDTH):
                             CURRENT_BANDWIDTH = current_bdw
-                    if((current_bdw-CURRENT_BANDWIDTH) < threshold):
+                    if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
                         print('bandwidth dropped below threshold')
                         write_server_address('migrate')
