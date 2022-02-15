@@ -39,7 +39,7 @@ def monitoring():
                         CURRENT_BANDWIDTH = current_bdw
                     if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
-                        file_out.write('migrate\n')
+                        file_out.write('migrate')
                         time.sleep(10) # wait for data
                 else:
                     logger.log(log_file, "Finding the best server")
@@ -47,6 +47,7 @@ def monitoring():
                     CURRENT_BANDWIDTH = best_server[1]
                     print(best_server[0])
                     file_out.write(best_server[0])
+                    time.sleep(10) # wait for data
                 servers = {}
 
             else:
