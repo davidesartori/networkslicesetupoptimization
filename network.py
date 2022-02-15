@@ -54,14 +54,6 @@ def build(net):
     net.addController(c)
     net.build()
     net.start()
-    print("Testing network connectivity")
-    # net.pingAll()
-    h1, h2, h3, h4 = net.get('h1', 'h2', 'h3', 'h4')
-    # h1.cmd('./iperfServer.sh {} &'.format(sleep_time))
-    # h2.cmd('./iperfClient.sh {} &'.format(sleep_time))
-    # h3.cmd('./iperfClient.sh {} &'.format(sleep_time))
-    # h4.cmd('./iperfClient.sh {} &'.format(sleep_time))
-    # CLI(net)
 
 
 def execute_iperf(hosts, current_server, current_server_address):
