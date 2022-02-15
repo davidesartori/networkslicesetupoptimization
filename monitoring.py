@@ -9,14 +9,20 @@ import modules.config as config
 import modules.logger as logger
 
 
+def write_server_address(server_address):
+    conf = config.get_conf("config/monitoring.conf")
+    server_log = conf["server_addr_file"]
+    file_out = open(server_log, "w")
+    file_out.write(server_address)
+    file_out.close()
 
 
 def monitoring():
     conf = config.get_conf("config/monitoring.conf")
     threshold = int(conf["threshold"])
-    server_log = conf["server_addr_file"]
     iperf_log = conf["iperf_file"]
     log_file = conf["log_file"]
+    wait = int(conf['sleep_time'])
     CURRENT_BANDWIDTH = -1
 
     logger.log(log_file, "Monitoring initialized")
@@ -25,7 +31,6 @@ def monitoring():
     servers = {}
     while True:
         file_in = open(iperf_log, 'r')
-        file_out = open(server_log, 'w')
         Lines = file_in.readlines()
         file_in.close()
         for line in Lines:
@@ -33,22 +38,22 @@ def monitoring():
                 if(len(servers)==1):
                     server = list(servers)[0]
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
-                    print('bandwidth corrente: {}'.format(current_bdw))
+                    print('current bandwidth: {}'.format(current_bdw))
                     if(CURRENT_BANDWIDTH == -1):
                         CURRENT_BANDWIDTH = current_bdw
-                    if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
+                    else:
+                        if(current_bdw > CURRENT_BANDWIDTH):
+                            CURRENT_BANDWIDTH = current_bdw
+                    if((current_bdw-CURRENT_BANDWIDTH) < threshold):
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
-                        print('migrate')
-                        file_out.write('migrate')
-                        file_out.close()
-                        time.sleep(10) # wait for data
+                        print('bandwidth dropped below threshold')
+                        write_server_address('migrate')
                 else:
                     logger.log(log_file, "Finding the best server")
-                    print('finding best server')
                     best_server = find_best_server(servers)
                     CURRENT_BANDWIDTH = best_server[1]
-                    file_out.write(best_server[0])
-                    time.sleep(10) # wait for data
+                    write_server_address(best_server[0])
+                    print('best server is {}'.format(best_server[0]))
                 servers = {}
 
             else:
@@ -62,7 +67,7 @@ def monitoring():
                         servers[server_ip] = [0, 0]
                     servers[server_ip][0] = servers[server_ip][0] + bandwidth #sommiamo le bdw
                     servers[server_ip][1] = servers[server_ip][1] + 1 #aumentiamo il numero di client
-        time.sleep(3)
+        time.sleep(wait)
 
 
 def find_best_server(servers):
@@ -80,5 +85,8 @@ def calculate_avg_bandwidth(bandwidth, clients_n):
     return bandwidth/clients_n
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    conf = config.get_conf('config/monitoring.conf')
+    wait = int(conf['sleep_time'])
+    time.sleep(wait) # Give time to network.py to execute iperf
     monitoring()
