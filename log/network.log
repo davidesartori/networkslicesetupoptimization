@@ -339,3 +339,30 @@
 15-02-2022 16:16:28§Running iperf to check current server performance
 15-02-2022 16:17:09§Performance analysis done
 15-02-2022 16:17:29§Running iperf to check current server performance
+15-02-2022 18:02:35§Execution started
+15-02-2022 18:02:35§Creating the network
+15-02-2022 18:02:36§Network created
+15-02-2022 18:02:36§Running iperf to check current server performance
+15-02-2022 18:03:19§Performance analysis done
+15-02-2022 18:03:39§Running iperf to check current server performance
+15-02-2022 18:04:52§Execution started
+15-02-2022 18:04:52§Creating the network
+15-02-2022 18:04:53§Network created
+15-02-2022 18:04:53§Running iperf to check current server performance
+15-02-2022 18:05:50§Execution started
+15-02-2022 18:05:50§Creating the network
+15-02-2022 18:05:51§Network created
+15-02-2022 18:05:51§Running iperf to check current server performance
+15-02-2022 18:06:34§Performance analysis done
+15-02-2022 18:06:54§Migration request detected. Executing iperf on every server
+15-02-2022 18:08:24§Waiting for migration to start
+15-02-2022 18:08:54§Migrating the service
+15-02-2022 18:09:14§Running iperf to check current server performance
+15-02-2022 18:09:54§Performance analysis done
+15-02-2022 18:10:15§Running iperf to check current server performance
+15-02-2022 18:10:55§Performance analysis done
+15-02-2022 18:11:15§Migration request detected. Executing iperf on every server
+15-02-2022 18:12:49§Waiting for migration to start
+15-02-2022 18:13:19§Migrating the service
+15-02-2022 18:13:39§Running iperf to check current server performance
+15-02-2022 18:14:30§Performance analysis done

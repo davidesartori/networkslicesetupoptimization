@@ -180,6 +180,7 @@ if __name__ == '__main__':
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
         elif file_address == "migrate":
+            net.get(current_server).cmd("sudo pkill iperf")
             logger.log(log_file, "Migration request detected. Executing iperf on every server")
 
             print("Executing iperf on every server")
@@ -199,5 +200,8 @@ if __name__ == '__main__':
             print("migrating the service")
             current_server = "h" + file_address.split(".")[-1]
             current_server_address = file_address
+
+            for server in servers:
+                net.get(server).cmd("sudo pkill iperf")
 
         time.sleep(int(sleep_time))
