@@ -10,11 +10,9 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 import subprocess
 import modules.config as config
-import modules.logger as logger
 
 
 conf = config.get_conf("config/controller.conf")
-log_file = conf["log_file"]
 
 
 class TrafficSlicing(app_manager.RyuApp):
@@ -23,17 +21,14 @@ class TrafficSlicing(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(TrafficSlicing, self).__init__(*args, **kwargs)
 
-        logger.log(log_file, "Contoller initialized")
-
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {
-            1: {1: 5, 5: 1, 2: [3, 4], 3: [2, 4]},
+            1: {2: 3, 3: 2},
             2: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            3: {1: 4, 4: 1, 2: [3, 5], 3: [2, 5], 5: [2, 3]},
-            4: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
-            5: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
-            6: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
-            7: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
+            3: {2: 3, 3: 2},
+            4: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
+            5: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            6: {1: 2, 2: 1},
         }
 
         # launch monitoring.py
@@ -59,10 +54,13 @@ class TrafficSlicing(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         # construct flow_mod message and send it.
+ 
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+
         mod = parser.OFPFlowMod(
             datapath=datapath, priority=priority, match=match, instructions=inst
         )
+        
         datapath.send_msg(mod)
 
     def _send_package(self, msg, datapath, in_port, actions):
@@ -87,16 +85,19 @@ class TrafficSlicing(app_manager.RyuApp):
         in_port = msg.match["in_port"]
         dpid = datapath.id
 
-        out_port = self.slice_to_port[dpid][in_port]
-
-        # si incazza se mandi più messaggi, uno solo in cui si specificano più actions
-        if(isinstance(out_port, int)):
-            actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        if(in_port in self.slice_to_port[dpid]):
+            out_port = self.slice_to_port[dpid][in_port]
+            # possible multiple -> anyway just one message
+            if(isinstance(out_port, int)):
+                actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+            else:
+                actions = []
+                for i in out_port:
+                    out_port_i = i
+                    actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
         else:
+            # no actions -> drop packet
             actions = []
-            for i in out_port:
-                out_port_i = i
-                actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
         
         match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
         self.add_flow(datapath, 1, match, actions)
