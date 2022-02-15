@@ -54,10 +54,13 @@ class TrafficSlicing(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         # construct flow_mod message and send it.
+ 
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+
         mod = parser.OFPFlowMod(
             datapath=datapath, priority=priority, match=match, instructions=inst
         )
+        
         datapath.send_msg(mod)
 
     def _send_package(self, msg, datapath, in_port, actions):
@@ -83,10 +86,8 @@ class TrafficSlicing(app_manager.RyuApp):
         dpid = datapath.id
 
         if(in_port in self.slice_to_port[dpid]):
-
             out_port = self.slice_to_port[dpid][in_port]
-
-            # un solo in cui si specificano più actions [quando ci sono più out_port]
+            # possible multiple -> anyway just one message
             if(isinstance(out_port, int)):
                 actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
             else:
@@ -94,9 +95,10 @@ class TrafficSlicing(app_manager.RyuApp):
                 for i in out_port:
                     out_port_i = i
                     actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
-        
-            match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
-            self.add_flow(datapath, 1, match, actions)
-            self._send_package(msg, datapath, in_port, actions)
         else:
-            print('non ci puoi arrivare')
+            # no actions -> drop packet
+            actions = []
+        
+        match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
+        self.add_flow(datapath, 1, match, actions)
+        self._send_package(msg, datapath, in_port, actions)
