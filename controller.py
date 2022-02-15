@@ -27,13 +27,18 @@ class TrafficSlicing(app_manager.RyuApp):
 
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {
-            1: {1: 5, 5: 1, 2: [3, 4], 3: [2, 4]},
+            1: {1: 4, 4: 1, 2: 3, 3: 2},
             2: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            3: {1: 4, 4: 1, 2: [3, 5], 3: [2, 5], 5: [2, 3]},
+            3: {1: 3, 3: 1, 2: 4, 4: 2},
             4: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
             5: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
-            6: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
-            7: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
+            6: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            7: {1: 2, 2: 1},
+            8: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            9: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            10:{1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            11:{1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            12:{1: 2, 2: 1},
         }
 
         # launch monitoring.py
@@ -89,7 +94,7 @@ class TrafficSlicing(app_manager.RyuApp):
 
         out_port = self.slice_to_port[dpid][in_port]
 
-        # si incazza se mandi più messaggi, uno solo in cui si specificano più actions
+        # for multiple out_ports -> multiple actions, one message
         if(isinstance(out_port, int)):
             actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
         else:
