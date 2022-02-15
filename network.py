@@ -38,11 +38,11 @@ class SimpleTopo(Topo):
         self.addLink("s3", "s4", **switch_link_config)
         self.addLink("s4", "s5", **switch_link_config)
         self.addLink("s5", "s6", **switch_link_config)
+        self.addLink("s1", "s6", **switch_link_config)
         self.addLink("s1", "s7", **switch_link_config)
         self.addLink("s3", "s7", **switch_link_config)
         self.addLink("s4", "s7", **switch_link_config)
         self.addLink("s6", "s7", **switch_link_config)
-        self.addLink("s1", "s6", **switch_link_config)
         #connecting hosts to switches
         self.addLink("h1", "s1", **host_link_config)
         self.addLink("h2", "s1", **host_link_config)
@@ -81,8 +81,9 @@ def execute_iperf(hosts, current_server, current_server_address):
 
         s.cmd("iperf -s -p 5566&")
         iperf_output = h.cmd("iperf -c " + current_server_address + " -p 5566")
+
         if(iperf_output[0] == "-"):
-            bandwidth = float(iperf_output.split("\n")[6].split(" ")[-2].split(" ")[0])
+            bandwidth = float(iperf_output.split("\n")[-2].split(" ")[-2].split(" ")[0])
             udm = iperf_output.split("\n")[6].split(" ")[-1].split(" ")[0].strip()
         else:
             bandwidth = 0
@@ -114,7 +115,7 @@ def execute_iperf_for_migration(hosts, servers):
             print(iperf_output)
 
             if(iperf_output[0] == "-"):
-                bandwidth = float(iperf_output.split("\n")[6].split(" ")[-2].split(" ")[0])
+                bandwidth = float(iperf_output.split("\n")[-2].split(" ")[-2].split(" ")[0])
                 udm = iperf_output.split("\n")[6].split(" ")[-1].split(" ")[0].strip()
             else:
                 bandwidth = 0
@@ -158,8 +159,8 @@ if __name__ == '__main__':
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
     log_file = conf["log_file"]
-    hosts = ["h3", "h3"]
-    servers = ["h1", "h4"]
+    hosts = ["h2", "h3", "h4", "h5", "h7", "h8", "h9", "h10"]
+    servers = ["h1", "h6", "h11"]
     current_server = "h" + current_server_address.split(".")[-1]
 
     logger.log(log_file, "Execution started")
