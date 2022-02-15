@@ -27,6 +27,7 @@ def monitoring():
         file_in = open(iperf_log, 'r')
         file_out = open(server_log, 'w')
         Lines = file_in.readlines()
+        file_in.close()
         for line in Lines:
             if('#' in line):
                 if(len(servers)==1):
@@ -39,6 +40,7 @@ def monitoring():
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
                         print('migrate')
                         file_out.write('migrate')
+                        file_out.close()
                         time.sleep(10) # wait for data
                 else:
                     logger.log(log_file, "Finding the best server")
