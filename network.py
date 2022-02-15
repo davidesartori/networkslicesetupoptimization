@@ -104,7 +104,6 @@ def execute_iperf_for_migration(hosts, servers):
             s.cmd("iperf -s -p 5566&")
             server_address = "10.0.0." + server[1:]
             iperf_output = h.cmd("iperf -c " + server_address + " -p 5566")
-            print(iperf_output)
 
             if(iperf_output[0] == "-"):
                 bandwidth = float(iperf_output.split("\n")[-2].split(" ")[-2].split(" ")[0])
