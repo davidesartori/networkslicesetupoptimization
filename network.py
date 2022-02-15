@@ -25,7 +25,7 @@ class SimpleTopo(Topo):
         switch_link_config = dict(bw=1)
         host_link_config = dict()
 
-                for i in range(6):
+        for i in range(6):
             sconfig = {"dpid": "%016x" % (i + 1)}
             self.addSwitch("s%d" % (i + 1), **sconfig)
 
