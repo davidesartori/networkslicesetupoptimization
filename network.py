@@ -151,8 +151,8 @@ if __name__ == '__main__':
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
     log_file = conf["log_file"]
-    hosts = ["h2", "h3", "h4", "h5", "h7", "h8", "h9", "h10"]
-    servers = ["h1", "h6", "h11"]
+    hosts = ["h2", "h3", "h4", "h6"]
+    servers = ["h1", "h5"]
     current_server = "h" + current_server_address.split(".")[-1]
 
     logger.log(log_file, "Execution started")
