@@ -86,7 +86,7 @@ def execute_iperf(hosts, current_server, current_server_address):
         elif(udm[0] == 'G'):
             bandwidth *= 1000000
 
-        iperf_string += current_server + ";" + host + ";" + str(bandwidth) + "\n"
+        iperf_string += current_server_address + ";" + host + ";" + str(bandwidth) + "\n"
 
     return iperf_string
 
