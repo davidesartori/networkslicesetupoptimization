@@ -50,6 +50,8 @@ sudo mn -c
 ryu-manager controller.py
 
 sudo python3 network.py
+
+pkill monitoring.py
 ```
 
 ## Credits
