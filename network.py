@@ -63,6 +63,8 @@ def execute_iperf(hosts, current_server, current_server_address):
         h = net.get(host)
         s = net.get(current_server)
 
+        print("Running iperf from " + host + " to " + current_server)
+
         s.cmd("iperf -s -p 5566&")
         iperf_output = h.cmd("iperf -c " + current_server_address + " -p 5566")
 
@@ -92,6 +94,8 @@ def execute_iperf_for_migration(hosts, servers):
 
         for host in hosts:
             h = net.get(host)
+
+            print("Running iperf from " + host + " to " + server)
 
             s.cmd("iperf -s -p 5566&")
             server_address = "10.0.0." + server[1:]
