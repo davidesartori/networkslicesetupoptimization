@@ -25,11 +25,11 @@ class SimpleTopo(Topo):
         switch_link_config = dict(bw=1)
         host_link_config = dict()
 
-         for i in range(12):
+        for i in range(6):
             sconfig = {"dpid": "%016x" % (i + 1)}
             self.addSwitch("s%d" % (i + 1), **sconfig)
 
-        for i in range(15):
+        for i in range(6):
             self.addHost("h%d" % (i + 1), **host_config)
 
         #connecting switches
@@ -39,29 +39,14 @@ class SimpleTopo(Topo):
         self.addLink("s3", "s4", **switch_link_config)
         self.addLink("s4", "s5", **switch_link_config)
         self.addLink("s4", "s6", **switch_link_config)
-        self.addLink("s4", "s7", **switch_link_config)
-        self.addLink("s5", "s8", **switch_link_config)
-        self.addLink("s5", "s9", **switch_link_config)
-        self.addLink("s5", "s10", **switch_link_config)
-        self.addLink("s6", "s11", **switch_link_config)
-        self.addLink("s6", "s12", **switch_link_config)
 
         #connecting hosts to switches
         self.addLink("h1", "s1", **host_link_config)
-        self.addLink("h2", "s1", **host_link_config)
-        self.addLink("h3", "s2", **host_link_config)
-        self.addLink("h4", "s3", **host_link_config)
-        self.addLink("h5", "s3", **host_link_config)
-        self.addLink("h6", "s7", **host_link_config)
-        self.addLink("h7", "s12", **host_link_config)
-        self.addLink("h8", "s11", **host_link_config)
-        self.addLink("h9", "s11", **host_link_config)
-        self.addLink("h10", "s10", **host_link_config)
-        self.addLink("h11", "s10", **host_link_config)
-        self.addLink("h12", "s9", **host_link_config)
-        self.addLink("h13", "s9", **host_link_config)
-        self.addLink("h14", "s8", **host_link_config)
-        self.addLink("h15", "s8", **host_link_config)
+        self.addLink("h2", "s2", **host_link_config)
+        self.addLink("h3", "s3", **host_link_config)
+        self.addLink("h4", "s6", **host_link_config)
+        self.addLink("h5", "s5", **host_link_config)
+        self.addLink("h6", "s5", **host_link_config)
 
 
 def build(net):
