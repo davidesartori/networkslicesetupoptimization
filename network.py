@@ -25,7 +25,7 @@ class SimpleTopo(Topo):
         switch_link_config = dict(bw=1)
         host_link_config = dict()
 
-        for i in range(6):
+                for i in range(6):
             sconfig = {"dpid": "%016x" % (i + 1)}
             self.addSwitch("s%d" % (i + 1), **sconfig)
 
@@ -38,17 +38,8 @@ class SimpleTopo(Topo):
         self.addLink("s1", "s4", **switch_link_config)
         self.addLink("s3", "s4", **switch_link_config)
         self.addLink("s4", "s5", **switch_link_config)
-<<<<<<< HEAD
-        self.addLink("s5", "s6", **switch_link_config)
-        self.addLink("s1", "s6", **switch_link_config)
-        self.addLink("s1", "s7", **switch_link_config)
-        self.addLink("s3", "s7", **switch_link_config)
-        self.addLink("s4", "s7", **switch_link_config)
-        self.addLink("s6", "s7", **switch_link_config)
-=======
         self.addLink("s4", "s6", **switch_link_config)
 
->>>>>>> 1f5e9a07a14e83138e5a0fb32c09b6a49cd97535
         #connecting hosts to switches
         self.addLink("h1", "s1", **host_link_config)
         self.addLink("h2", "s2", **host_link_config)
