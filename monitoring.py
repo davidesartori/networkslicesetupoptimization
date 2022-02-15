@@ -21,30 +21,33 @@ def monitoring():
 
     logger.log(log_file, "Monitoring initialized")
 
-    file_in = open(iperf_log, 'r')
-    file_out = open(server_log, 'a')
-    Lines = file_in.readlines()
     #{ip_server: [bandwidth, client_counter]}
     servers = {}
     while True:
+        file_in = open(iperf_log, 'r')
+        file_out = open(server_log, 'w')
+        Lines = file_in.readlines()
         for line in Lines:
+            print(line)
             if('#' in line):
                 if(len(servers)==1):
+                    print('ci sta un solo server')
                     server = list(servers)[0]
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
+                    print('bandwidth corrente: {}'.format(current_bdw))
                     if(CURRENT_BANDWIDTH == -1):
                         CURRENT_BANDWIDTH = current_bdw
                     if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
-
                         file_out.write('migrate\n')
-                        time.sleep(3)
+                        time.sleep(10) # wait for data
                 else:
                     logger.log(log_file, "Finding the best server")
                     best_server = find_best_server(servers)
                     CURRENT_BANDWIDTH = best_server[1]
                     print(best_server[0])
-                    file_out.write('{}\n'.format(best_server[0]))
+                    file_out.write(best_server[0])
+                servers = {}
 
             else:
                 params = line.split(';')
@@ -68,6 +71,8 @@ def find_best_server(servers):
         if(bandwidth > best_bandwidth):
             best_bandwidth = bandwidth
             best_server = server
+    print(best_server)
+    print(best_bandwidth)
     return [best_server, best_bandwidth]
 
 
