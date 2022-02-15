@@ -205,7 +205,7 @@ if __name__ == '__main__':
         else:
             logger.log(log_file, "Migrating the service")
 
-            print("migrate the service")
+            print("migrating the service")
             current_server = "h" + file_address.split(".")[-1]
 
         time.sleep(int(sleep_time))

@@ -33,7 +33,7 @@ class TrafficSlicing(app_manager.RyuApp):
 
         # launch monitoring.py
         if conf["monitoring"] == "true":
-            subprocess.call("sudo python3 monitoring.py", shell=True)
+            subprocess.call("sudo python3 monitoring.py&", shell=True)
 
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
@@ -54,13 +54,13 @@ class TrafficSlicing(app_manager.RyuApp):
         parser = datapath.ofproto_parser
 
         # construct flow_mod message and send it.
- 
+
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
 
         mod = parser.OFPFlowMod(
             datapath=datapath, priority=priority, match=match, instructions=inst
         )
-        
+
         datapath.send_msg(mod)
 
     def _send_package(self, msg, datapath, in_port, actions):
@@ -98,7 +98,7 @@ class TrafficSlicing(app_manager.RyuApp):
         else:
             # no actions -> drop packet
             actions = []
-        
+
         match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
         self.add_flow(datapath, 1, match, actions)
         self._send_package(msg, datapath, in_port, actions)
