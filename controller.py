@@ -10,11 +10,9 @@ from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 import subprocess
 import modules.config as config
-import modules.logger as logger
 
 
 conf = config.get_conf("config/controller.conf")
-log_file = conf["log_file"]
 
 
 class TrafficSlicing(app_manager.RyuApp):
@@ -23,22 +21,14 @@ class TrafficSlicing(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(TrafficSlicing, self).__init__(*args, **kwargs)
 
-        logger.log(log_file, "Contoller initialized")
-
         # out_port = slice_to_port[dpid][in_port]
         self.slice_to_port = {
-            1: {1: 4, 4: 1, 2: 3, 3: 2},
+            1: {2: 3, 3: 2},
             2: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            3: {1: 3, 3: 1, 2: 4, 4: 2},
-            4: {1: [2, 3, 4, 5], 2: [1, 3, 4, 5], 3: [1, 2, 4, 5], 4: [1, 2, 3, 5], 5: [1, 2, 3, 4]},
-            5: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
-            6: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            7: {1: 2, 2: 1},
-            8: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            9: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            10:{1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            11:{1: [2, 3], 2: [1, 3], 3: [1, 2]},
-            12:{1: 2, 2: 1},
+            3: {2: 3, 3: 2},
+            4: {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]},
+            5: {1: [2, 3], 2: [1, 3], 3: [1, 2]},
+            6: {1: 2, 2: 1},
         }
 
         # launch monitoring.py
@@ -92,17 +82,21 @@ class TrafficSlicing(app_manager.RyuApp):
         in_port = msg.match["in_port"]
         dpid = datapath.id
 
-        out_port = self.slice_to_port[dpid][in_port]
+        if(in_port in self.slice_to_port[dpid]):
 
-        # for multiple out_ports -> multiple actions, one message
-        if(isinstance(out_port, int)):
-            actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
-        else:
-            actions = []
-            for i in out_port:
-                out_port_i = i
-                actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
+            out_port = self.slice_to_port[dpid][in_port]
+
+            # un solo in cui si specificano più actions [quando ci sono più out_port]
+            if(isinstance(out_port, int)):
+                actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+            else:
+                actions = []
+                for i in out_port:
+                    out_port_i = i
+                    actions += [datapath.ofproto_parser.OFPActionOutput(out_port_i)]
         
-        match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
-        self.add_flow(datapath, 1, match, actions)
-        self._send_package(msg, datapath, in_port, actions)
+            match = datapath.ofproto_parser.OFPMatch(in_port=in_port)
+            self.add_flow(datapath, 1, match, actions)
+            self._send_package(msg, datapath, in_port, actions)
+        else:
+            print('non ci puoi arrivare')
