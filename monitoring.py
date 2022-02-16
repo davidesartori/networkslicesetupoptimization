@@ -23,6 +23,7 @@ def monitoring():
     iperf_log = conf["iperf_file"]
     log_file = conf["log_file"]
     wait = int(conf['sleep_time'])
+    wait_iperf = int(conf['wait_iperf'])
     CURRENT_BANDWIDTH = -1
 
     logger.log(log_file, "Monitoring initialized")
@@ -41,8 +42,9 @@ def monitoring():
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
                     # server unreachable
                     if(current_bdw == 0):
-                        write_server_address('migrate')
                         print('Server Unreachable')
+                        write_server_address('migrate')
+                        time.sleep(wait_iperf)
                     else:
                         print('Current Bandwidth: {}'.format(current_bdw))
                         if(CURRENT_BANDWIDTH == -1):
@@ -54,12 +56,14 @@ def monitoring():
                             logger.log(log_file, 'Bandwidth drop')
                             print('Bandwidth dropped below threshold')
                             write_server_address('migrate')
+                            time.sleep(wait_iperf)
                 else:
                     logger.log(log_file, 'Finding the best server')
                     best_server = find_best_server(servers)
                     if(best_server[0] == 'none'):
-                        write_server_address('migrate')
                         print('Server Unreachable')
+                        write_server_address('migrate')
+                        time.sleep(wait_iperf)
                     else:
                         CURRENT_BANDWIDTH = best_server[1]
                         write_server_address(best_server[0])
