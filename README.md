@@ -50,8 +50,10 @@ sudo mn -c
 ryu-manager controller.py
 
 sudo python3 network.py
-
-pkill monitoring.py
+```
+- To stop the program execution, stop the scripts and run the following command:
+```
+pkill -f monitoring.py
 ```
 
 ## Credits
