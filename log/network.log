@@ -1035,3 +1035,39 @@
 16-02-2022 00:00:00§Running iperf to check current server performance
 16-02-2022 00:00:41§Performance analysis done
 16-02-2022 00:00:42§Migration request detected. Executing iperf on every server
+16-02-2022 00:06:22§Execution started
+16-02-2022 00:06:22§Creating the network
+16-02-2022 00:06:24§Network created
+16-02-2022 00:06:24§Running iperf to check current server performance
+16-02-2022 00:06:56§Performance analysis done
+16-02-2022 00:06:57§Running iperf to check current server performance
+16-02-2022 00:07:29§Performance analysis done
+16-02-2022 00:07:30§Running iperf to check current server performance
+16-02-2022 00:08:02§Performance analysis done
+16-02-2022 00:08:03§Running iperf to check current server performance
+16-02-2022 00:08:36§Performance analysis done
+16-02-2022 00:08:37§Running iperf to check current server performance
+16-02-2022 00:09:09§Performance analysis done
+16-02-2022 00:09:10§Migration request detected. Executing iperf on every server
+16-02-2022 00:10:13§Waiting for migration to start
+16-02-2022 00:10:14§Migrating the service
+16-02-2022 00:10:15§Running iperf to check current server performance
+16-02-2022 00:10:47§Performance analysis done
+16-02-2022 00:10:48§Running iperf to check current server performance
+16-02-2022 00:11:19§Performance analysis done
+16-02-2022 00:11:20§Running iperf to check current server performance
+16-02-2022 00:11:52§Performance analysis done
+16-02-2022 00:11:53§Running iperf to check current server performance
+16-02-2022 00:12:25§Performance analysis done
+16-02-2022 00:12:26§Running iperf to check current server performance
+16-02-2022 00:12:57§Performance analysis done
+16-02-2022 00:12:58§Running iperf to check current server performance
+16-02-2022 00:13:29§Performance analysis done
+16-02-2022 00:13:30§Running iperf to check current server performance
+16-02-2022 00:14:02§Performance analysis done
+16-02-2022 00:14:04§Migration request detected. Executing iperf on every server
+16-02-2022 00:15:08§Waiting for migration to start
+16-02-2022 00:15:09§Migrating the service
+16-02-2022 00:15:10§Running iperf to check current server performance
+16-02-2022 00:15:43§Performance analysis done
+16-02-2022 00:15:44§Running iperf to check current server performance

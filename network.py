@@ -29,7 +29,7 @@ class SimpleTopo(Topo):
             sconfig = {"dpid": "%016x" % (i + 1)}
             self.addSwitch("s%d" % (i + 1), **sconfig)
 
-        for i in range(6):
+        for i in range(5):
             self.addHost("h%d" % (i + 1), **host_config)
 
         #connecting switches
@@ -46,7 +46,6 @@ class SimpleTopo(Topo):
         self.addLink("h3", "s3", **host_link_config)
         self.addLink("h4", "s6", **host_link_config)
         self.addLink("h5", "s5", **host_link_config)
-        self.addLink("h6", "s5", **host_link_config)
 
 
 def build(net):
@@ -161,7 +160,7 @@ if __name__ == '__main__':
     current_server_address = conf["server_address"]
     iperf_file = conf["iperf_file"]
     log_file = conf["log_file"]
-    hosts = ["h2", "h3", "h4", "h6"]
+    hosts = ["h2", "h3", "h4"]
     servers = ["h1", "h5"]
     current_server = "h" + current_server_address.split(".")[-1]
     
