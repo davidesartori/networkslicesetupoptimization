@@ -94,7 +94,6 @@ def execute_iperf_for_migration(hosts, servers, current_server):
 
         s = net.get(server)
         if(server != current_server):
-            print('Deployed service also on server {}'.format(s))
             s.cmd('iperf -s -p 5566&')
 
         for host in hosts:
@@ -160,7 +159,7 @@ if __name__ == '__main__':
     hosts = ["h2", "h3", "h4"]
     servers = ["h1", "h5"]
     current_server = "h" + current_server_address.split(".")[-1]
-
+    counter_link = 0
 
     logger.log(log_file, "Execution started")
 
@@ -195,6 +194,12 @@ if __name__ == '__main__':
 
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
+
+            if(counter_link == 3):
+                net.delLinkBetween(net.get("h5"), net.get("s5"), 0, False)
+                print("Link eliminated")
+
+            counter_link += 1
         elif file_address == "migrate":
             logger.log(log_file, "Migration request detected. Executing iperf on every server")
 
