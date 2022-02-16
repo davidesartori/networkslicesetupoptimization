@@ -38,7 +38,7 @@ def monitoring():
                 if(len(servers)==1):
                     server = list(servers)[0]
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
-                    print('current bandwidth: {}'.format(current_bdw))
+                    print('Current bandwidth: {}'.format(current_bdw))
                     if(CURRENT_BANDWIDTH == -1):
                         CURRENT_BANDWIDTH = current_bdw
                     else:
@@ -46,14 +46,19 @@ def monitoring():
                             CURRENT_BANDWIDTH = current_bdw
                     if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
                         logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
-                        print('bandwidth dropped below threshold')
+                        print('Bandwidth dropped below threshold')
                         write_server_address('migrate')
                 else:
                     logger.log(log_file, "Finding the best server")
                     best_server = find_best_server(servers)
-                    CURRENT_BANDWIDTH = best_server[1]
-                    write_server_address(best_server[0])
-                    print('best server is {}'.format(best_server[0]))
+                    if(best_server[0] == 'none'):
+                        write_server_address('migrate')
+                        print('Server unreachable')
+                    else:
+                        CURRENT_BANDWIDTH = best_server[1]
+                        write_server_address(best_server[0])
+                        print('Best server is {}'.format(best_server[0]))
+                    CURRENT_BANDWIDTH = -1
                 servers = {}
 
             else:
@@ -87,6 +92,6 @@ def calculate_avg_bandwidth(bandwidth, clients_n):
 
 if __name__ == '__main__':
     conf = config.get_conf('config/monitoring.conf')
-    wait = int(conf['sleep_time'])
-    time.sleep(wait) # Give time to network.py to execute iperf
+    wait_iperf = int(conf['wait_iperf'])
+    time.sleep(wait_iperf) # Give time to network.py to execute iperf
     monitoring()

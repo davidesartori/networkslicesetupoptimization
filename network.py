@@ -58,14 +58,17 @@ def build(net):
 
 def execute_iperf(hosts, current_server, current_server_address):
     iperf_string = ""
+    s = net.get(current_server)
+    #print(s.cmd('ps -aux | grep iperf'))
+    # mininet kills the process?
+    s.cmd('iperf -s -p 5566&')
+
 
     for host in hosts:
         h = net.get(host)
-        s = net.get(current_server)
 
         print("Running iperf from " + host + " to " + current_server)
 
-        s.cmd("iperf -s -p 5566&")
         iperf_output = h.cmd("iperf -c " + current_server_address + " -p 5566")
 
         if(iperf_output[0] == "-"):
@@ -85,19 +88,21 @@ def execute_iperf(hosts, current_server, current_server_address):
     return iperf_string
 
 
-def execute_iperf_for_migration(hosts, servers):
+def execute_iperf_for_migration(hosts, servers, current_server):
     iperf_string = ""
 
     for server in servers:
 
         s = net.get(server)
+        if(server != current_server):
+            print('Deployed service also on server {}'.format(s))
+            s.cmd('iperf -s -p 5566&')
 
         for host in hosts:
             h = net.get(host)
 
             print("Running iperf from " + host + " to " + server)
-
-            s.cmd("iperf -s -p 5566&")
+            
             server_address = "10.0.0." + server[1:]
             iperf_output = h.cmd("iperf -c " + server_address + " -p 5566")
 
@@ -139,6 +144,16 @@ def get_current_server_address(path):
     return address
 
 
+def migrate_service(current_server):
+    print('current server is {}'.format(current_server))
+    for server in servers:
+        s = net.get(server)
+        if(server != current_server):
+            print('Removed service from {}'.format(s))
+            s.cmd("sudo pkill -f iperf")
+            s.cmd("sudo pkill -f iperf")
+            
+
 if __name__ == '__main__':
     conf = config.get_conf("config/network.conf")
     sleep_time = conf["sleep_time"]  # seconds between client iperf requests
@@ -149,6 +164,7 @@ if __name__ == '__main__':
     hosts = ["h2", "h3", "h4", "h6"]
     servers = ["h1", "h5"]
     current_server = "h" + current_server_address.split(".")[-1]
+    
 
     logger.log(log_file, "Execution started")
 
@@ -170,6 +186,10 @@ if __name__ == '__main__':
 
     logger.log(log_file, "Network created")
 
+    #logger.log(log_file, "Deploying service")
+    #s = net.get(current_server)
+    #s.cmd('iperf -s -p 5566&')
+
     while True:
         file_address = get_current_server_address(server_addr_file)
 
@@ -184,11 +204,10 @@ if __name__ == '__main__':
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
         elif file_address == "migrate":
-            net.get(current_server).cmd("sudo pkill iperf")
             logger.log(log_file, "Migration request detected. Executing iperf on every server")
 
             print("Executing iperf on every server")
-            iperf_result = execute_iperf_for_migration(hosts, servers)
+            iperf_result = execute_iperf_for_migration(hosts, servers, current_server)
             write_iperf(iperf_file, iperf_result[:-1])
 
             logger.log(log_file, "Waiting for migration to start")
@@ -197,15 +216,14 @@ if __name__ == '__main__':
 
             while file_address == "migrate":
                 file_address = get_current_server_address(server_addr_file)
-                time.sleep(10)
         else:
             logger.log(log_file, "Migrating the service")
 
             print("migrating the service")
             current_server = "h" + file_address.split(".")[-1]
             current_server_address = file_address
+            migrate_service(current_server)
 
-            for server in servers:
-                net.get(server).cmd("sudo pkill iperf")
+            
 
         time.sleep(int(sleep_time))
