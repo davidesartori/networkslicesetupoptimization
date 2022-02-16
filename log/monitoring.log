@@ -310,6 +310,7 @@
 15-02-2022 22:10:50§Finding the best server
 15-02-2022 22:11:00§Finding the best server
 16-02-2022 00:21:51§Monitoring initialized
+<<<<<<< HEAD
 16-02-2022 00:31:42§Monitoring initialized
 16-02-2022 00:58:59§Monitoring initialized
 16-02-2022 01:00:19§Finding the best server
@@ -322,3 +323,14 @@
 16-02-2022 01:01:29§Finding the best server
 16-02-2022 01:01:39§Finding the best server
 16-02-2022 01:01:49§Finding the best server
+=======
+16-02-2022 00:48:13§Monitoring initialized
+16-02-2022 00:49:25§Monitoring initialized
+16-02-2022 00:50:15§Bandwidth below threshold detected, asking for migration
+16-02-2022 00:50:25§Bandwidth below threshold detected, asking for migration
+16-02-2022 00:50:35§Bandwidth below threshold detected, asking for migration
+16-02-2022 00:51:45§Finding the best server
+16-02-2022 00:51:55§Finding the best server
+16-02-2022 00:52:05§Finding the best server
+16-02-2022 00:52:15§Finding the best server
+>>>>>>> d3a05de926e55b54c5e5041aa73aba6d6593c599
