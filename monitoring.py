@@ -38,16 +38,20 @@ def monitoring():
                 if(len(servers)==1):
                     server = list(servers)[0]
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
-                    print('Current bandwidth: {}'.format(current_bdw))
-                    if(CURRENT_BANDWIDTH == -1):
-                        CURRENT_BANDWIDTH = current_bdw
-                    else:
-                        if(current_bdw > CURRENT_BANDWIDTH):
-                            CURRENT_BANDWIDTH = current_bdw
-                    if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
-                        logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
-                        print('Bandwidth dropped below threshold')
+                    if(current_bdw == 0):
                         write_server_address('migrate')
+                        print('Server unreachable')
+                    else:
+                        print('Current bandwidth: {}'.format(current_bdw))
+                        if(CURRENT_BANDWIDTH == -1):
+                            CURRENT_BANDWIDTH = current_bdw
+                        else:
+                            if(current_bdw > CURRENT_BANDWIDTH):
+                                CURRENT_BANDWIDTH = current_bdw
+                        if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
+                            logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
+                            print('Bandwidth dropped below threshold')
+                            write_server_address('migrate')
                 else:
                     logger.log(log_file, "Finding the best server")
                     best_server = find_best_server(servers)
@@ -64,7 +68,9 @@ def monitoring():
             else:
                 params = line.split(';')
                 if(params[2] == '0\n'):
-                    pass
+                    server_ip = params[0]
+                    if(server_ip not in servers):
+                        servers[server_ip] = [0, 0]
                 else:
                     server_ip = params[0]
                     bandwidth = float(params[2].split('\n')[0])
@@ -87,7 +93,11 @@ def find_best_server(servers):
 
 
 def calculate_avg_bandwidth(bandwidth, clients_n):
-    return bandwidth/clients_n
+    if(clients_n == 0) :
+        avg = 0
+    else:
+        avg = bandwidth/clients_n
+    return avg
 
 
 if __name__ == '__main__':
