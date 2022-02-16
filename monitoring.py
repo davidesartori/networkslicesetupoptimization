@@ -35,29 +35,31 @@ def monitoring():
         file_in.close()
         for line in Lines:
             if('#' in line):
+                # just one server
                 if(len(servers)==1):
                     server = list(servers)[0]
                     current_bdw = calculate_avg_bandwidth(servers[server][0], servers[server][1])
+                    # server unreachable
                     if(current_bdw == 0):
                         write_server_address('migrate')
-                        print('Server unreachable')
+                        print('Server Unreachable')
                     else:
-                        print('Current bandwidth: {}'.format(current_bdw))
+                        print('Current Bandwidth: {}'.format(current_bdw))
                         if(CURRENT_BANDWIDTH == -1):
                             CURRENT_BANDWIDTH = current_bdw
                         else:
                             if(current_bdw > CURRENT_BANDWIDTH):
                                 CURRENT_BANDWIDTH = current_bdw
                         if((current_bdw-CURRENT_BANDWIDTH+threshold) < 0):
-                            logger.log(log_file, "Bandwidth below threshold detected, asking for migration")
+                            logger.log(log_file, 'Bandwidth drop')
                             print('Bandwidth dropped below threshold')
                             write_server_address('migrate')
                 else:
-                    logger.log(log_file, "Finding the best server")
+                    logger.log(log_file, 'Finding the best server')
                     best_server = find_best_server(servers)
                     if(best_server[0] == 'none'):
                         write_server_address('migrate')
-                        print('Server unreachable')
+                        print('Server Unreachable')
                     else:
                         CURRENT_BANDWIDTH = best_server[1]
                         write_server_address(best_server[0])
@@ -76,8 +78,8 @@ def monitoring():
                     bandwidth = float(params[2].split('\n')[0])
                     if(server_ip not in servers):
                         servers[server_ip] = [0, 0]
-                    servers[server_ip][0] = servers[server_ip][0] + bandwidth #sommiamo le bdw
-                    servers[server_ip][1] = servers[server_ip][1] + 1 #aumentiamo il numero di client
+                    servers[server_ip][0] = servers[server_ip][0] + bandwidth
+                    servers[server_ip][1] = servers[server_ip][1] + 1
         time.sleep(wait)
 
 
@@ -93,6 +95,7 @@ def find_best_server(servers):
 
 
 def calculate_avg_bandwidth(bandwidth, clients_n):
+    # an unreachable host
     if(clients_n == 0) :
         avg = 0
     else:
@@ -103,5 +106,6 @@ def calculate_avg_bandwidth(bandwidth, clients_n):
 if __name__ == '__main__':
     conf = config.get_conf('config/monitoring.conf')
     wait_iperf = int(conf['wait_iperf'])
-    time.sleep(wait_iperf) # Give time to network.py to execute iperf
+    # time to network.py to execute iperf
+    time.sleep(wait_iperf)
     monitoring()

@@ -195,7 +195,7 @@ if __name__ == '__main__':
             print("Performance analysis done")
             write_iperf(iperf_file, iperf_result)
 
-            if(counter_link == 3):
+            if(counter_link == 1):
                 net.delLinkBetween(net.get("h5"), net.get("s5"), 0, False)
                 print("Link eliminated")
 
@@ -216,7 +216,7 @@ if __name__ == '__main__':
         else:
             logger.log(log_file, "Migrating the service")
 
-            print("migrating the service")
+            print("Migrating the service")
 
             current_server = "h" + file_address.split(".")[-1]
             current_server_address = file_address
