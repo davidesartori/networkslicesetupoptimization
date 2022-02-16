@@ -58,7 +58,6 @@ def build(net):
 def execute_iperf(hosts, current_server, current_server_address):
     iperf_string = ""
     s = net.get(current_server)
-    #print(s.cmd('ps -aux | grep iperf'))
     # mininet kills the process?
     s.cmd('iperf -s -p 5566&')
 
@@ -150,7 +149,6 @@ def migrate_service(current_server):
         if(server != current_server):
             print('Removed service from {}'.format(s))
             s.cmd("sudo pkill -f iperf")
-            s.cmd("sudo pkill -f iperf")
             
 
 if __name__ == '__main__':
@@ -184,10 +182,6 @@ if __name__ == '__main__':
     build(net)
 
     logger.log(log_file, "Network created")
-
-    #logger.log(log_file, "Deploying service")
-    #s = net.get(current_server)
-    #s.cmd('iperf -s -p 5566&')
 
     while True:
         file_address = get_current_server_address(server_addr_file)
