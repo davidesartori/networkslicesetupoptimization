@@ -149,6 +149,7 @@ def kill_iperf_servers():
             print('Removed service from {}'.format(s))
             s.cmd("sudo pkill -f iperf")
             
+            
 if __name__ == '__main__':
     conf = config.get_conf("config/network.conf")
     sleep_time = conf["sleep_time"]  # seconds between client iperf requests
