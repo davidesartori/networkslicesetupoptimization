@@ -58,7 +58,6 @@ def build(net):
 def execute_iperf(hosts, current_server, current_server_address):
     iperf_string = ""
     s = net.get(current_server)
-    #print(s.cmd('ps -aux | grep iperf'))
     # mininet kills the process?
     s.cmd('iperf -s -p 5566&')
 
@@ -146,10 +145,10 @@ def get_current_server_address(path):
 def kill_iperf_servers():
     for server in servers:
         s = net.get(server)
-        s.cmd("sudo pkill -f iperf")
-        s.cmd("sudo pkill -f iperf")
-
-
+        if(server != current_server):
+            print('Removed service from {}'.format(s))
+            s.cmd("sudo pkill -f iperf")
+            
 if __name__ == '__main__':
     conf = config.get_conf("config/network.conf")
     sleep_time = conf["sleep_time"]  # seconds between client iperf requests
