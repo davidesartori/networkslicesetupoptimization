@@ -1071,6 +1071,7 @@
 16-02-2022 00:15:10§Running iperf to check current server performance
 16-02-2022 00:15:43§Performance analysis done
 16-02-2022 00:15:44§Running iperf to check current server performance
+<<<<<<< HEAD
 16-02-2022 00:17:36§Execution started
 16-02-2022 00:17:36§Creating the network
 16-02-2022 00:17:38§Network created
@@ -1198,3 +1199,15 @@
 16-02-2022 00:32:39§Running iperf to check current server performance
 16-02-2022 00:33:10§Performance analysis done
 16-02-2022 00:33:11§Running iperf to check current server performance
+=======
+16-02-2022 00:20:57§Execution started
+16-02-2022 00:20:57§Creating the network
+16-02-2022 00:20:58§Network created
+16-02-2022 00:20:58§Running iperf to check current server performance
+16-02-2022 00:21:30§Performance analysis done
+16-02-2022 00:21:31§Running iperf to check current server performance
+16-02-2022 00:22:03§Performance analysis done
+16-02-2022 00:22:04§Running iperf to check current server performance
+16-02-2022 00:22:35§Performance analysis done
+16-02-2022 00:22:36§Running iperf to check current server performance
+>>>>>>> 8596c3c037a64939bce4bd9e76efa3dfee0544f3
